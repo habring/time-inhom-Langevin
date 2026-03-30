@@ -29,6 +29,7 @@ mixture_weights = th.Tensor([0.3,0.4,0.3]).to(device)
 gmm = pot.GMM_diffusion(means = means, sigmas=sigmas, mixture_weights=mixture_weights)
 
 times_dict = {}
+times_dict_all = {}
 taus_dict = {}
 
 
@@ -165,6 +166,8 @@ for T in T_list:
 
     df_times.to_csv(f'{folder_}/steps.csv')
     df_taus.to_csv(f'{folder_}/taus.csv')
+
+    times_dict_all[T] = df_times
 
     df_times.plot()
     plt.savefig(f'{folder_}/steps.png')
