@@ -14,7 +14,7 @@ from PIL.Image import Image
 # from pathos.multiprocessing import ProcessingPool as Pool
 import subprocess
 
-device = th.device('cuda' if th.cuda.is_available() else 'cpu')
+device = th.device('cuda:0' if th.cuda.is_available() else 'cpu')
 
 # proximal mapping of x\mapsto a*|x-z|^2/2
 def prox_sq_l2(x, z=0,t=1,a=1):

@@ -22,7 +22,7 @@ with th.no_grad():
 
     # generate random means
     th.manual_seed(0)
-    device = th.device('cuda:1' if th.cuda.is_available() else 'cpu')
+    device = th.device('cuda:0' if th.cuda.is_available() else 'cpu')
     print(device)
 
     folder_ = f'results/imaging/unconditional'
@@ -100,7 +100,7 @@ with th.no_grad():
                 nabla_f=nabla_f)
         sample = sampler(x_init = x_init, callback_fn = callback_)
 
-    for T in [100*step,1000*step,1000*step,2000*step]:
+    for T in [100*step,200*step,500*step,1000*step,2000*step]:
         folder = f'{folder_}/T_{T}'
         Path(folder).mkdir(parents=True,exist_ok=True)
 

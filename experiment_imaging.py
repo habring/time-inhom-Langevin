@@ -56,15 +56,15 @@ with th.no_grad():
 
 
     maxit = 30000
-    check_iter = 500
+    check_iter = 0
     save_sample = np.arange(0,maxit,10)
     show_plot=False
 
     methods = {
                 'ULA': True,
-                'dilation':False,
-                'tempering':False,
-                'diffusion':False,
+                'dilation':True,
+                'tempering':True,
+                'diffusion':True,
     }
 
     def callback(alg, state,write_file,dir):
@@ -90,6 +90,8 @@ with th.no_grad():
     step = 1e-3
     times = th.Tensor(np.arange(0,step*maxit,step))
 
+    folder_ = f'{folder_}/step_{step}'
+
     if methods['ULA'] == True:
         print('ULA')
         def callback_(algo,state):
@@ -103,7 +105,7 @@ with th.no_grad():
                 nabla_f=nabla_f)
         sample = sampler(x_init = x_init, callback_fn = callback_)
 
-    for T in [.1,.2,.5,1,2]:
+    for T in [100*step,200*step,500*step,1000*step,2000*step]:
         folder = f'{folder_}/T_{T}'
         Path(folder).mkdir(parents=True,exist_ok=True)
 
