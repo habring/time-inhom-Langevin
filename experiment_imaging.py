@@ -61,10 +61,10 @@ with th.no_grad():
     show_plot=False
 
     methods = {
-                'ULA': True,
-                'dilation':True,
-                'tempering':True,
-                'diffusion':False,
+                'ULA': False,
+                'dilation':False,
+                'tempering':False,
+                'diffusion':True,
     }
 
     def callback(alg, state,write_file,dir):
