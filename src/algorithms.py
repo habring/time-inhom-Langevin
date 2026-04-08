@@ -3,7 +3,8 @@ import torch as th
 import torch.nn as nn
 from dataclasses import dataclass
 from typing import Callable, Optional
-device = th.device('cuda' if th.cuda.is_available() else 'cpu')
+
+device = th.device('cuda:1' if th.cuda.is_available() else 'cpu')
 
 
 class DAZ(nn.Module):

@@ -5,7 +5,7 @@ import numpy as np
 import deepinv as dinv
 
 
-device = th.device('cuda' if th.cuda.is_available() else 'cpu')
+device = th.device('cuda:1' if th.cuda.is_available() else 'cpu')
 
 
 # GMM diffusion density; for tau=0, basic GMM; for tau>0, the density of VP diffusion initialized at the GMM. GMM components can have any diagonal covariance (otherwise diffusion not explicit)
