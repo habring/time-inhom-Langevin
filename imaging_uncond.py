@@ -25,7 +25,7 @@ with th.no_grad():
     device = th.device('cuda:0' if th.cuda.is_available() else 'cpu')
     print(device)
 
-    folder_ = f'results/imaging'
+    folder_ = f'results/imaging/unconditional'
     Path(folder_).mkdir(parents=True,exist_ok=True)
 
     # plt.rcParams.update({
