@@ -2,6 +2,8 @@ import math
 import torch as th
 import torch.nn as nn
 import numpy as np
+import deepinv as dinv
+
 
 device = th.device('cuda' if th.cuda.is_available() else 'cpu')
 
@@ -55,6 +57,20 @@ class GMM_diffusion(nn.Module):
 
         return sample
 
+
+class DSM_score(nn.Module):
+    def __init__(self) -> None:
+        super().__init__()
+        self.model = dinv.models.DiffUNet(large_model=False).to(device)
+    
+    def score(self, x: th.Tensor, tau: th.float64) -> th.Tensor:
+        
+        # diffusion model acts on images in [0,1]
+        x_denoised = self.model(x,th.sqrt(tau/(1-tau)))
+        score = - (x-x_denoised)/tau
+        
+        return score
+    
 
 def test_score_gmm(fun, score, n):
     
