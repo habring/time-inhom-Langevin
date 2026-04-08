@@ -72,7 +72,7 @@ with th.no_grad():
             fig,ax = plt.subplots(1,4,figsize = (20,7))
             x_plt = (state.x_in-state.x_in.min()) / (state.x_in.max() - state.x_in.min())
             mean_plt = (state.running_mean-state.running_mean.min()) / (state.running_mean.max() - state.running_mean.min())
-            ax[0].imshow(th.permute((mask*x_true).squeeze(),(1,2,0)).cpu())
+            ax[0].imshow(th.permute((x_true).squeeze(),(1,2,0)).cpu())
             ax[1].imshow(th.permute(x_plt.squeeze(),(1,2,0)).cpu())
             ax[2].imshow(th.permute(mean_plt.squeeze(),(1,2,0)).cpu())
             ax[3].imshow(th.permute(x_true.squeeze(),(1,2,0)).cpu())
@@ -87,7 +87,7 @@ with th.no_grad():
     if methods['ULA'] == True:
         print('ULA')
         def callback_(algo,state):
-            return callback(alg=algo,state=state, write_file=f'{folder}/err_ULA.txt',dir=f'{folder}/ULA_samples')
+            return callback(alg=algo,state=state, write_file=f'{folder_}/err_ULA.txt',dir=f'{folder_}/ULA_samples')
 
         def nabla_f(x,tau):
             return model.score(x,sigma_final)

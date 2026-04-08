@@ -93,7 +93,7 @@ with th.no_grad():
     if methods['ULA'] == True:
         print('ULA')
         def callback_(algo,state):
-            return callback(alg=algo,state=state, write_file=f'{folder}/err_ULA.txt',dir=f'{folder}/ULA_samples')
+            return callback(alg=algo,state=state, write_file=f'{folder_}/err_ULA.txt',dir=f'{folder_}/ULA_samples')
 
         def nabla_f(x,tau):
             return model.score(x,sigma_final) - lam*mask*(x-x_true)
