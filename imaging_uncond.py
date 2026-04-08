@@ -67,6 +67,23 @@ with th.no_grad():
     step = 1e-3
     times = th.Tensor(np.arange(0,step*maxit,step))
 
+    def callback(alg, state,write_file,dir):
+        if check_iter>0 and state.n % check_iter==0:
+            fig,ax = plt.subplots(1,4,figsize = (20,7))
+            x_plt = (state.x_in-state.x_in.min()) / (state.x_in.max() - state.x_in.min())
+            mean_plt = (state.running_mean-state.running_mean.min()) / (state.running_mean.max() - state.running_mean.min())
+            ax[0].imshow(th.permute((mask*x_true).squeeze(),(1,2,0)).cpu())
+            ax[1].imshow(th.permute(x_plt.squeeze(),(1,2,0)).cpu())
+            ax[2].imshow(th.permute(mean_plt.squeeze(),(1,2,0)).cpu())
+            ax[3].imshow(th.permute(x_true.squeeze(),(1,2,0)).cpu())
+            plt.title(f'tau = {state.tau}, iter = {state.n}')
+            plt.show()
+
+        if state.n in save_sample:
+            Path(dir).mkdir(exist_ok=True,parents=True)
+            th.save(state.x_in, f'{dir}/sample_iter_{state.n}.th')
+        return
+
     if methods['ULA'] == True:
         print('ULA')
         def callback_(algo,state):
@@ -85,24 +102,6 @@ with th.no_grad():
         Path(folder).mkdir(parents=True,exist_ok=True)
 
         tau = lambda t: sigma_final + th.exp(-t/T)*(1-sigma_final-1e-3)
-
-        def callback(alg, state,write_file,dir):
-            if check_iter>0 and state.n % check_iter==0:
-                fig,ax = plt.subplots(1,4,figsize = (20,7))
-                x_plt = (state.x_in-state.x_in.min()) / (state.x_in.max() - state.x_in.min())
-                mean_plt = (state.running_mean-state.running_mean.min()) / (state.running_mean.max() - state.running_mean.min())
-                ax[0].imshow(th.permute((mask*x_true).squeeze(),(1,2,0)).cpu())
-                ax[1].imshow(th.permute(x_plt.squeeze(),(1,2,0)).cpu())
-                ax[2].imshow(th.permute(mean_plt.squeeze(),(1,2,0)).cpu())
-                ax[3].imshow(th.permute(x_true.squeeze(),(1,2,0)).cpu())
-                plt.title(f'tau = {state.tau}, iter = {state.n}')
-                plt.show()
-
-            if state.n in save_sample:
-                Path(dir).mkdir(exist_ok=True,parents=True)
-                th.save(state.x_in, f'{dir}/sample_iter_{state.n}.th')
-            return
-
 
         if methods['diffusion'] == True:
             taus = tau(times)
