@@ -183,6 +183,7 @@ class GeneralAnnealing(nn.Module):
                 running_mean = (running_mean*(n-reset-1) + x_) / (n-reset)
                 if n-reset== self.burnin:
                     reset = n
+                    running_mean *= 0
 
             s = self.State(n=n, x_in=x, x_out=x_, tau=self.taus[n+1], t=self.times[n+1], df=df, z=z,running_mean=running_mean)
             callback_fn(self, s)

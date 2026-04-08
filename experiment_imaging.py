@@ -56,15 +56,15 @@ with th.no_grad():
 
 
     maxit = 30000
-    check_iter = 0
+    check_iter = 500
     save_sample = np.arange(0,maxit,10)
     show_plot=False
 
     methods = {
-                'ULA': False,
+                'ULA': True,
                 'dilation':False,
                 'tempering':False,
-                'diffusion':True,
+                'diffusion':False,
     }
 
     def callback(alg, state,write_file,dir):

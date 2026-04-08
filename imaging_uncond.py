@@ -48,14 +48,14 @@ with th.no_grad():
     x_init = x_true #+ th.randn_like(x_true)#*0.1 # th.randn_like(x).to(device).requires_grad_(False).to(device)
 
     maxit = 30000
-    check_iter = 0
+    check_iter = 500
     save_sample = np.arange(0,maxit,10)
     show_plot=False
 
     methods = {
-                'ULA': False,
-                'dilation':False,
-                'tempering':False,
+                'ULA': True,
+                'dilation':True,
+                'tempering':True,
                 'diffusion':True,
     }
 
@@ -63,21 +63,24 @@ with th.no_grad():
     
     model = pot.DSM_score()
 
-    sigma_final = th.tensor(0.01)
+    sigma_final = th.tensor(0.01)+ 1e-6
     step = 1e-3
     times = th.Tensor(np.arange(0,step*maxit,step))
 
+    folder_ = f'{folder_}/step_{step}'
+
     def callback(alg, state,write_file,dir):
         if check_iter>0 and state.n % check_iter==0:
-            fig,ax = plt.subplots(1,4,figsize = (20,7))
-            x_plt = (state.x_in-state.x_in.min()) / (state.x_in.max() - state.x_in.min())
-            mean_plt = (state.running_mean-state.running_mean.min()) / (state.running_mean.max() - state.running_mean.min())
-            ax[0].imshow(th.permute((x_true).squeeze(),(1,2,0)).cpu())
-            ax[1].imshow(th.permute(x_plt.squeeze(),(1,2,0)).cpu())
-            ax[2].imshow(th.permute(mean_plt.squeeze(),(1,2,0)).cpu())
-            ax[3].imshow(th.permute(x_true.squeeze(),(1,2,0)).cpu())
-            plt.title(f'tau = {state.tau}, iter = {state.n}')
-            plt.show()
+            if show_plot:
+                fig,ax = plt.subplots(1,4,figsize = (20,7))
+                x_plt = (state.x_in-state.x_in.min()) / (state.x_in.max() - state.x_in.min())
+                mean_plt = (state.running_mean-state.running_mean.min()) / (state.running_mean.max() - state.running_mean.min())
+                ax[0].imshow(th.permute((x_true).squeeze(),(1,2,0)).cpu())
+                ax[1].imshow(th.permute(x_plt.squeeze(),(1,2,0)).cpu())
+                ax[2].imshow(th.permute(mean_plt.squeeze(),(1,2,0)).cpu())
+                ax[3].imshow(th.permute(x_true.squeeze(),(1,2,0)).cpu())
+                plt.title(f'tau = {state.tau}, iter = {state.n}')
+                plt.show()
 
         if state.n in save_sample:
             Path(dir).mkdir(exist_ok=True,parents=True)
@@ -89,7 +92,7 @@ with th.no_grad():
         def callback_(algo,state):
             return callback(alg=algo,state=state, write_file=f'{folder_}/err_ULA.txt',dir=f'{folder_}/ULA_samples')
 
-        def nabla_f(x,tau):
+        def nabla_f(x,t):
             return model.score(x,sigma_final)
         
         taus = times*0. + sigma_final
@@ -97,7 +100,7 @@ with th.no_grad():
                 nabla_f=nabla_f)
         sample = sampler(x_init = x_init, callback_fn = callback_)
 
-    for T in [.1,.2,.5,1,2]:
+    for T in [100*step,1000*step,1000*step,2000*step]:
         folder = f'{folder_}/T_{T}'
         Path(folder).mkdir(parents=True,exist_ok=True)
 
@@ -109,8 +112,8 @@ with th.no_grad():
             def callback_(algo,state):
                 return callback(alg=algo,state=state, write_file=f'{folder}/err_diffusion.txt',dir=f'{folder}/diffusion_samples')
             
-            def nabla_f(x,tau):
-                return model.score(x,tau)
+            def nabla_f(x,t):
+                return model.score(x,t)
             
             sampler = algo.GeneralAnnealing(times=times,taus=taus,
                     nabla_f=nabla_f,burnin=burnin)
