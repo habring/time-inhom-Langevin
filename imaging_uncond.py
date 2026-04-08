@@ -22,7 +22,7 @@ with th.no_grad():
 
     # generate random means
     th.manual_seed(0)
-    device = th.device('cuda:0' if th.cuda.is_available() else 'cpu')
+    device = th.device('cuda:1' if th.cuda.is_available() else 'cpu')
     print(device)
 
     folder_ = f'results/imaging/unconditional'
@@ -64,7 +64,7 @@ with th.no_grad():
     model = pot.DSM_score()
 
     sigma_final = th.tensor(0.01)+ 1e-6
-    step = 1e-3
+    step = 1e-4
     times = th.Tensor(np.arange(0,step*maxit,step))
 
     folder_ = f'{folder_}/step_{step}'
