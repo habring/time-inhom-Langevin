@@ -48,7 +48,7 @@ with th.no_grad():
     x_init = x_true #+ th.randn_like(x_true)#*0.1 # th.randn_like(x).to(device).requires_grad_(False).to(device)
 
     maxit = 30000
-    check_iter = 500
+    check_iter = 0
     save_sample = np.arange(0,maxit,10)
     show_plot=False
 
@@ -64,7 +64,7 @@ with th.no_grad():
     model = pot.DSM_score()
 
     sigma_final = th.tensor(0.01)+ 1e-6
-    step = 1e-3
+    step = 1e-4
     times = th.Tensor(np.arange(0,step*maxit,step))
 
     folder_ = f'{folder_}/step_{step}'
