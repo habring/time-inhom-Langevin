@@ -50,7 +50,7 @@ with th.no_grad():
         x = x_true.clone().requires_grad_(False).to(device)
         x_init = x_true #+ th.randn_like(x_true)#*0.1 # th.randn_like(x).to(device).requires_grad_(False).to(device)
 
-        maxit = 30000
+        maxit = 15000
         check_iter = 0
         save_sample = np.arange(0,maxit,10)
         show_plot=False
