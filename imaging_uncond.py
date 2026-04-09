@@ -50,16 +50,16 @@ with th.no_grad():
         x = x_true.clone().requires_grad_(False).to(device)
         x_init = x_true #+ th.randn_like(x_true)#*0.1 # th.randn_like(x).to(device).requires_grad_(False).to(device)
 
-        maxit = 15000
+        maxit = 20000
         check_iter = 0
         save_sample = np.arange(0,maxit,10)
         show_plot=False
 
         methods = {
-                    'ULA': True,
-                    'dilation':True,
+                    'ULA': False,
+                    'dilation':False,
                     'tempering':True,
-                    'diffusion':True,
+                    'diffusion':False,
         }
 
 
@@ -103,7 +103,7 @@ with th.no_grad():
                     nabla_f=nabla_f)
             sample = sampler(x_init = x_init, callback_fn = callback_)
 
-        for T in [100*step,200*step,500*step,1000*step,2000*step]:
+        for T in [100*step,200*step,500*step,1000*step,2000*step,5000*step,10000*step]:
             folder = f'{folder_}/T_{T}'
             Path(folder).mkdir(parents=True,exist_ok=True)
 
@@ -131,7 +131,7 @@ with th.no_grad():
                 def callback_(algo,state):
                     return callback(alg=algo,state=state, write_file=f'{folder}/err_tempering.txt',dir=f'{folder}/tempering_samples')
                 def nabla_f(x,tau):
-                    return (1-tau)*model.score(x/np.sqrt(1-tau),sigma_final) - tau*x
+                    return (1-tau)*model.score(x/np.sqrt(1-tau),sigma_final) - tau*(x - th.mean(x_true, dim=(2,3),keepdim=True))
                 
                 sampler = algo.GeneralAnnealing(times=times,taus=taus,
                         nabla_f=nabla_f)
@@ -146,7 +146,7 @@ with th.no_grad():
                 def callback_(algo,state):
                     return callback(alg=algo,state=state, write_file=f'{folder}/err_dilation.txt',dir=f'{folder}/dilation_samples')
                 def nabla_f(x,tau):
-                    return np.sqrt(1-tau)*model.score(x/np.sqrt(1-tau),sigma_final)
+                    return np.sqrt(1-tau)*model.score((x - tau*th.mean(x_true, dim=(2,3),keepdim=True))/np.sqrt(1-tau),sigma_final)
                 
                 sampler = algo.GeneralAnnealing(times=times,taus=taus,
                         nabla_f=nabla_f)
