@@ -56,10 +56,10 @@ with th.no_grad():
         show_plot=False
 
         methods = {
-                    'ULA': False,
-                    'dilation':False,
+                    'ULA': True,
+                    'dilation':True,
                     'tempering':True,
-                    'diffusion':False,
+                    'diffusion':True,
         }
 
 
