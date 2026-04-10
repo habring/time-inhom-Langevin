@@ -100,7 +100,7 @@ with th.no_grad():
         model = pot.DSM_score()
 
         sigma_final = th.tensor(0.01)
-        step = 1e-4
+        step = 1e-3
         times = th.Tensor(np.arange(0,step*maxit,step))
 
         folder_ = f'{folder_}/step_{step}'
