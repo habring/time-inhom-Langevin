@@ -120,7 +120,7 @@ with th.no_grad():
                     nabla_f=nabla_f,burnin=burnin,reset=reset)
             sample = sampler(x_init = x_init, callback_fn = callback_)
 
-        for T in [100*step,200*step,500*step,1000*step]:
+        for T in [10*step,20*step,50*step]:
             folder = f'{folder_}/T_{T}'
             Path(folder).mkdir(parents=True,exist_ok=True)
 
