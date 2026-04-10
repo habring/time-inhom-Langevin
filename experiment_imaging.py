@@ -71,7 +71,7 @@ with th.no_grad():
         save_sample = np.arange(0,maxit,10)
 
         methods = {
-                    'ULA': False,
+                    'ULA': True,
                     'dilation':True,
                     'tempering':True,
                     'diffusion':True,
