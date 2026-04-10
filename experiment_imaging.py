@@ -68,7 +68,8 @@ with th.no_grad():
 
         maxit = 30000
         check_iter = 0
-        save_sample = list(np.arange(0,maxit,10)) + list(np.arange(55000,maxit_,10))
+        maxit_ULA = 50000
+        save_sample = list(np.arange(0,maxit,10)) + list(np.arange(55000,maxit_ULA,10))
 
         methods = {
                     'ULA': True,
@@ -105,7 +106,6 @@ with th.no_grad():
         folder_ = f'{folder_}/step_{step}'
 
         if methods['ULA'] == True:
-            maxit_ = 50000
 
             print('ULA')
             def callback_(algo,state):
@@ -114,7 +114,7 @@ with th.no_grad():
             def nabla_f(x,tau):
                 return model.score(x,sigma_final) + ll_score(x)
             
-            times_ = th.Tensor(np.arange(0,step*maxit_,step))
+            times_ = th.Tensor(np.arange(0,step*maxit_ULA,step))
             taus = times*0. + sigma_final
             sampler = algo.GeneralAnnealing(times=times,taus=taus,
                     nabla_f=nabla_f,burnin=burnin,reset=reset)
