@@ -136,7 +136,7 @@ class ULA(nn.Module):
         return x
 
 
-
+import numpy as np
 class GeneralAnnealing(nn.Module):
     @dataclass(frozen=True, kw_only=True)
     class State:
@@ -156,6 +156,7 @@ class GeneralAnnealing(nn.Module):
         nabla_f: Callable,
         zero_mean: bool = False,
         burnin: int=0,
+        reset=np.inf,
     ) -> None:
         super().__init__()
 
@@ -164,13 +165,14 @@ class GeneralAnnealing(nn.Module):
         self.nabla_f = nabla_f
         self.zero_mean = zero_mean
         self.burnin = burnin
+        self.reset = reset
 
     def forward(
         self, x_init: th.Tensor, callback_fn: Callable = lambda cfg, state: None
     ) -> th.Tensor:
         x = x_init.clone()
         running_mean = th.zeros_like(x)
-        reset = self.burnin
+        last_reset = self.burnin
 
         for n, time in enumerate(self.times[:-1]):
             z = th.randn_like(x)
@@ -180,10 +182,11 @@ class GeneralAnnealing(nn.Module):
             if self.zero_mean:
                 x_ -= x_.mean(dim=-1, keepdim=True)
 
-            if n>reset:
-                running_mean = (running_mean*(n-reset-1) + x_) / (n-reset)
-                if n-reset== self.burnin:
-                    reset = n
+
+            if n>self.burnin:
+                running_mean = (running_mean*(n-last_reset-1) + x_) / (n-last_reset)
+                if n-last_reset == self.reset:
+                    last_reset = n
                     running_mean *= 0
 
             s = self.State(n=n, x_in=x, x_out=x_, tau=self.taus[n+1], t=self.times[n+1], df=df, z=z,running_mean=running_mean)
