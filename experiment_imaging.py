@@ -68,7 +68,7 @@ with th.no_grad():
 
         maxit = 30000
         check_iter = 0
-        save_sample = np.arange(0,maxit,10)
+        save_sample = list(np.arange(0,maxit,10)) + list(np.arange(55000,maxit_,10))
 
         methods = {
                     'ULA': True,
@@ -106,7 +106,6 @@ with th.no_grad():
 
         if methods['ULA'] == True:
             maxit_ = 50000
-            save_sample = list[np.arange(0,maxit,10)] + list[np.arange(55000,maxit_,10)]
 
             print('ULA')
             def callback_(algo,state):
